@@ -4,13 +4,14 @@ Rjb (Ruby Java Bridge) loader with before_load and after_load hooks
 
 # Description
 When working with multiple gems or several rails initializer files that use Rjb, 
-you need to make sure that java dependencies of each implementation 
-get all set up before running Rjb::load. This is necessary because Rjb can only be loaded once.
+you need to make sure that all java dependencies are set up before running Rjb::load. 
+This is necessary because Rjb can only be loaded once.
 
-You can use rjb-loader to change classpath and java options, by adding 'before_load' to your gem or rails initializer.
+As an example, you could use rjb-loader to change classpath and java options. 
+You can do this by adding a 'before_load' hook to your gem or rails initializer.
 
-The 'after_load' hook can be used when your code needs an already loaded Rjb. 
-For instance, when you need to import and use the java classes.
+The 'after_load' hook, on the other hand, should be used when your code needs to run after Rjb::load. 
+For instance, when you need to use java classes.
 
 ## Install
 
@@ -30,7 +31,32 @@ For any issues related to the java/ruby integration, please check out: [http://r
 
 ## Using rjb-loader
 
-TODO
+Example from [jasper-rails](http://github.com/fortesinformatica/jasper-rails):
+
+```ruby
+  ...
+  
+  RjbLoader.before_load do |config|
+  
+    # This code changes the JVM classpath, so it has to run BEFORE loading Rjb.
+    Dir["#{File.dirname(__FILE__)}/java/*.jar"].each do |path|
+      config.classpath << File::PATH_SEPARATOR + File.expand_path(path)
+    end
+    
+    # We can also change java options here, if we want to.
+    config.java_options += ['-Xms256M', '-Xmx512M']
+    
+  end
+  
+  RjbLoader.after_load do |config|
+  
+    # This code needs java classes, so it has to run AFTER loading Rjb.
+    _Locale = Rjb::import 'java.util.Locale'
+    JasperRails.config[:report_params]["REPORT_LOCALE"]    = _Locale.new('en', 'US')
+    
+  end
+  ...
+```
 
 ## LICENSE
 
