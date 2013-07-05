@@ -5,7 +5,7 @@ Rjb (Ruby Java Bridge) loader with before_load and after_load hooks
 # Description
 When working with multiple gems or several rails initializer files that use Rjb, 
 you need to make sure that java dependencies of each implementation 
-get all set up before running Rjb::load. This is necessary because Rjb can be loaded only once.
+get all set up before running Rjb::load. This is necessary because Rjb can only be loaded once.
 
 You can use rjb-loader to change classpath and java options, by adding 'before_load' to your gem or rails initializer.
 
